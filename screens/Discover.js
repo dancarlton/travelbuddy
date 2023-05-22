@@ -6,24 +6,48 @@ import {
   ScrollView,
   type,
   setType,
+  TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { useNavigation } from "@react-navigation/native";
-import { Attractions, Avatar, Hotels, Party, Restaurants } from "../assets";
+import {
+  Attractions,
+  Avatar,
+  Hotels,
+  NotFound,
+  Party,
+  PartyIcon,
+  Restaurants,
+} from "../assets";
 import MenuContainer from "../components/MenuContainer";
-import { PartyIcon } from "../assets/app-icons/party.png";
+import { FontAwesome5 } from "@expo/vector-icons";
+import ItemCardContainer from "../components/ItemCardContainer";
+import { getPlacesData } from "../api";
 
 // Use the PartyIcon as an image source or wherever it's needed in your code
 
 const Discover = () => {
   const navigation = useNavigation();
 
-  const [first, setfirst] = useState("restaurants");
+  const [type, setType] = useState("restaurants");
+  const [isLoading, setIsLoading] = useState(false);
+  const [mainData, setMainData] = useState([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
+    });
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    getPlacesData().then((data) => {
+      setMainData(data);
+      setInterval(() => {
+        setIsLoading(false);
+      }, 2000);
     });
   }, []);
 
@@ -66,39 +90,94 @@ const Discover = () => {
       </View>
 
       {/* Menu Container */}
-
-      <ScrollView>
-        <View className="flex-row items-center justify-center px-8 mt-8">
-          <MenuContainer
-            key={"hotel"}
-            title="Hotels"
-            imageSrc={Hotels}
-            type={type}
-            setType={setType}
-          />
-          <MenuContainer
-            key={"attractions"}
-            title="Attractions"
-            imageSrc={Attractions}
-            type={type}
-            setType={setType}
-          />
-          <MenuContainer
-            key={"restaurants"}
-            title="Restaurants"
-            imageSrc={Restaurants}
-            type={type}
-            setType={setType}
-          />
-          <MenuContainer
-            key={"partyicon"}
+      {isLoading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#0b646b" />
+        </View>
+      ) : (
+        <ScrollView>
+          <View className="flex-row items-center justify-between px-8 mt-8">
+            <MenuContainer
+              key={"hotel"}
+              title="Hotels"
+              imageSrc={Hotels}
+              type={type}
+              setType={setType}
+            />
+            <MenuContainer
+              key={"attractions"}
+              title="Attractions"
+              imageSrc={Attractions}
+              type={type}
+              setType={setType}
+            />
+            <MenuContainer
+              key={"restaurants"}
+              title="Restaurants"
+              imageSrc={Restaurants}
+              type={type}
+              setType={setType}
+            />
+            {/* <MenuContainer
+            key={"party-new"}
             title="PartyIcon"
             imageSrc={PartyIcon}
             type={type}
             setType={setType}
-          />
-        </View>
-      </ScrollView>
+          /> */}
+          </View>
+
+          <View>
+            <View className="flex-row justify-between px-4 mt-8">
+              <Text className="text-[#2c7379] text-[28px] font-bold">
+                Top Quests
+              </Text>
+              <TouchableOpacity className="flex-row items-center justify-center space-x-2">
+                <Text className="text-[#a0c4c7] text-[20px] font-bold">
+                  Explore
+                </Text>
+                <FontAwesome5
+                  name="long-arrow-alt-right"
+                  size={24}
+                  color="#a0c4c7"
+                />
+              </TouchableOpacity>
+            </View>
+
+            <View className="px-4 mt-8 flex-row items-center justify-evenly flex-wrap">
+              {mainData?.length > 0 ? (
+                <>
+                  {mainData?.map((data, i) => (
+                    <ItemCardContainer
+                      key={"i"}
+                      imageSrc={
+                        data?.photo?.images?.medium?.url
+                          ? data?.photo?.images?.medium?.url
+                          : "https://cdn.pixabay.com/photo/2017/02/14/07/29/eat-2064945_1280.jpg"
+                      }
+                      title={data?.name}
+                      location={data?.location_string}
+                      data={data}
+                    />
+                  ))}
+                </>
+              ) : (
+                <>
+                  <View className="w-full h-[400px] items-center space-y-8 justify-center">
+                    <Image
+                      source={NotFound}
+                      className="w-32 h-32 object-cover"
+                    />
+                    <Text className="text-2xl text-[#428288] font-semibold">
+                      Oops...No Data Found
+                    </Text>
+                  </View>
+                </>
+              )}
+            </View>
+          </View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
