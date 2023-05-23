@@ -4,16 +4,14 @@
     "slug": "travelbuddy",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/restaurants.png",
+    "icon": "./assets/app-icons/airplane.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/restaurants.png",
+      "image": "./assets/app-icons/pin.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
