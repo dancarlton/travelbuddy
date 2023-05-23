@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import React from "react";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
 const ItemCardContainer = ({ imageSrc, title, location, data }) => {
@@ -22,7 +22,7 @@ const ItemCardContainer = ({ imageSrc, title, location, data }) => {
           </Text>
 
           <View className="flex-row items-center space-x-1">
-            <FontAwesome5 name="map-pin" size={20} color="#8597a2" />
+            <MaterialIcons name="location-on" size={20} color="#8597a2" />
             <Text className="text-[#428288] text-[14px] font-bold">
               {location?.length > 18 ? `${location.slice(0, 18)}..` : location}
             </Text>
